@@ -1,0 +1,40 @@
+*{
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: #ff6600;
+    
+}
+
+#form-container{
+    margin: auto;
+    padding: 20px;
+    max-width: 650px;
+    background-color: #364652;
+    border: 1px solid #222;
+    border-radius: 5px;
+}
+
+input, button{
+    margin-bottom: 15px;
+    padding: 5px;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
+    color: #000;
+}
+
+#reminder-card{
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #ff6600;
+    border: 1px solid #222;
+    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    color: #000080;
+
+}
