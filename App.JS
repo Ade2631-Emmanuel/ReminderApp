@@ -86,46 +86,135 @@ function displayReminderCard(reminder) {
 }
 
 
+// Add event listener for click events on the container
+reminderCardsContainer.addEventListener('click', function(event) {
+    const target = event.target;
 
-//function to remove reminders from local storage and UI
+    // Check if the clicked element has the class remove-btn
+    if (target.classList.contains('remove-btn')) {
+        // Get the ID of the reminder from the data-id attribute
+        const id = parseInt(target.dataset.id);
+        removeReminder(id);
+    }
+
+    // Check if the clicked element has the class edit-btn
+    if (target.classList.contains('edit-btn')) {
+        // Get the ID of the reminder from the data-id attribute
+        const id = parseInt(target.dataset.id);
+        editReminder(id);
+    }
+});
+
+// Function to display reminder card
+function displayReminderCard(reminder) {
+    // This line creates a new '<div>' (card) element in the document and stores it in a variable called 'card'
+    const card = document.createElement('div');
+
+    // This line adds the css class 'card' to the newly created '<div>' element
+    card.classList.add('card');
+
+    // Set the ID of the card using the reminder's ID
+    card.id = 'reminder-' + reminder.id;
+
+    // This code sets the inner HTML content of the card element
+    card.innerHTML = `
+        <h3>${reminder.title}</h3>  
+        <p>${reminder.description}</p>  
+        <p>Date: ${reminder.date}</p>  
+        <p>Time: ${reminder.time}</p>
+        <button class="remove-btn" data-id="${reminder.id}">Remove</button>
+        <button class="edit-btn" data-id="${reminder.id}">Edit</button>
+    `;
+
+    // This line appends the newly created element to the reminder cards container('reminderCardsContainer')
+    reminderCardsContainer.appendChild(card);
+}
+
+// Function to remove reminders from local storage and UI
 function removeReminder(id) {
-
-    //This line retrieves the parent element of the button  
-    //const card = button.parentElement;
-
-    //This line extracts the reminder title (the text f the <h3> element)
-    //const reminderTitle = card.querySelector('h3').textContent;
-
-    //This lines of code removes reminder from local storage
+    // Remove from localStorage
     let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
     reminders = reminders.filter(reminder => reminder.id !== id);
     localStorage.setItem('reminders', JSON.stringify(reminders));
-    
-    //This line removes card from UI
-    //card.remove(); 
+
+    // Remove from UI
     const reminderCard = document.getElementById('reminder-' + id);
     if (reminderCard) {
         reminderCard.remove();
     }
 }
 
-//Function to edit reminder
-function editReminder(id) {
-    let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
-    const reminder = reminders.find(r => r.id == id);
 
-    //Populate form with reminder detais for editimg
+// Variable to store the ID of the reminder being edited
+let editingReminderId = null;
+
+// Function to edit reminder
+function editReminder(id) {
+    // Store the ID of the reminder being edited
+    editingReminderId = id;
+
+    let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+    const reminder = reminders.find(r => r.id === id);
+
+    // Populate form with reminder details for editing
     titleInput.value = reminder.title;
     descriptionInput.value = reminder.description;
     datePicker.value = reminder.date;
     timePicker.value = reminder.time;
 
-    //Remove existing reminder from local storage and UI
+    // Remove the reminder card from UI
     removeReminder(id);
-
-    //Resets form after editing
-    reminderForm.reset();
 }
+
+// Event listener for form submission
+reminderForm.addEventListener('submit', function(event) {
+    // This prevents a default form submission
+    event.preventDefault();
+
+    // This creates a reminder object with the updated details
+    const updatedReminder = {
+        id: editingReminderId,
+        title: titleInput.value,
+        description: descriptionInput.value,
+        date: datePicker.value,
+        time: timePicker.value
+    };
+
+    // Update reminder details in local storage
+    updateReminder(updatedReminder);
+
+    // Reset the editingReminderId
+    editingReminderId = null;
+
+    // Reset form after editing
+    reminderForm.reset();
+});
+
+// Function to update reminder details in local storage
+function updateReminder(reminder) {
+    let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+    const index = reminders.findIndex(r => r.id === reminder.id);
+    if (index !== -1) {
+        reminders[index] = reminder;
+        localStorage.setItem('reminders', JSON.stringify(reminders));
+
+        // Update UI if needed
+        const reminderCard = document.getElementById('reminder-' + reminder.id);
+        if (reminderCard) {
+            reminderCard.innerHTML = `
+                <h3>${reminder.title}</h3>  
+                <p>${reminder.description}</p>  
+                <p>Date: ${reminder.date}</p>  
+                <p>Time: ${reminder.time}</p>
+                <button class="remove-btn" data-id="${reminder.id}">Remove</button>
+                <button class="edit-btn" data-id="${reminder.id}">Edit</button>
+            `;
+        }
+    }
+
+}
+
+
 
 
 //Set timeout to alert when reminder elapses
